@@ -1,26 +1,4 @@
-% fitCumulativeGaussian
-%
-%      usage: fitCumulativeGaussian(x,y)
-%         by: justin gardner
-%       date: 10/11/2019
-%    purpose: fit a cumulative gaussian to psychophysical data
-%             y should be correct proportions (values between 0 and 1)
-%    options: 'minParams=[-inf 0 0]' The minimum values parameters can go to
-%             'maxParams=[inf inf inf] The maximum values parameters can go to
-%             'initParams=[]' Starting values of parameters - defaults to median and std of x values
-%             'maxIter=inf' How many iterations to search for best parameters
-%             'fitType=basic' Fits just mean and standard deviation. Set to 'lapse' to also fit a lapse rate
-%             'guessRate=0' Sets the guess rate, if you have a 2AFC you should set to 0.5
-%
-%       e.g.: 
-%             x = [1 5 10 20 30 40];
-%             y = [0.02 0.1 0.15 0.3 0.7 0.9];
-%             fit = fitCumulativeGaussian(x,y,'fitType=lapse')
-%             clf; plot(x,y,'ko'); hold on; plot(fit.fitX,fit.fitY,'r-');
-%             xlabel('stimulus value');ylabel('Correct (proportion)');
-%             title(sprintf('Mean %f Std %f lambda %f',fit.mean,fit.std,fit.lambda));
-%              
-%
+
 %
 function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels(x,y_high,y_med,y_low,varargin)
 
