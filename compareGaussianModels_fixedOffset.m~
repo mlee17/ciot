@@ -1,6 +1,6 @@
 
 %
-function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels(x,y_high,y_med,y_low,varargin)
+function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels_fixedOffset(x,y_high,y_med,y_low,varargin)
 
 % check arguments
 if nargin < 4
@@ -16,8 +16,8 @@ x = x(:)';y_high = y_high(:)'; y_med = y_med(:)'; y_low = y_low(:)';
 % set the initial parameters
 % Full model: mean_high, mean_med, mean_low, std_high, std_med, std_low,
 % amp_high, amp_med, amp_low, offset_high, offset_med, offset_low
-minParams_full = [-inf -inf -inf 0 0 0 -inf -inf -inf -inf -inf -inf];
-maxParams_full = [inf inf inf inf inf inf inf inf inf inf inf inf];
+minParams_full = [-inf -inf -inf 0 0 0 -inf -inf -inf -inf];
+maxParams_full = [inf inf inf inf inf inf inf inf inf inf];
 initParams_full = [median(x) median(x) median(x) 20 20 20 1 1 1 0 0 0]; %median(x) std(x) amplitude offset
 nParams_full = 12; % 4*3
 % Reduced (amplitude) model: mean_high, mean_med, mean_low, std, 

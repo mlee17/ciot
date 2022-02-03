@@ -1,6 +1,6 @@
 
 %
-function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels(x,y_high,y_med,y_low,varargin)
+function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels_fixedOffset(x,y_high,y_med,y_low,varargin)
 
 % check arguments
 if nargin < 4
@@ -15,17 +15,17 @@ x = x(:)';y_high = y_high(:)'; y_med = y_med(:)'; y_low = y_low(:)';
 
 % set the initial parameters
 % Full model: mean_high, mean_med, mean_low, std_high, std_med, std_low,
-% amp_high, amp_med, amp_low, offset_high, offset_med, offset_low
-minParams_full = [-inf -inf -inf 0 0 0 -inf -inf -inf -inf -inf -inf];
-maxParams_full = [inf inf inf inf inf inf inf inf inf inf inf inf];
-initParams_full = [median(x) median(x) median(x) 20 20 20 1 1 1 0 0 0]; %median(x) std(x) amplitude offset
-nParams_full = 12; % 4*3
+% amp_high, amp_med, amp_low, offset
+minParams_full = [-inf -inf -inf 0 0 0 -inf -inf -inf -inf];
+maxParams_full = [inf inf inf inf inf inf inf inf inf inf];
+initParams_full = [median(x) median(x) median(x) 20 20 20 1 1 1 0]; %median(x) std(x) amplitude offset
+nParams_full = 10; % 4*3 -2
 % Reduced (amplitude) model: mean_high, mean_med, mean_low, std, 
-% amp_high, amp_med, amp_low, offset_high, offset_med, offset_low 
-minParams_amp = [-inf -inf -inf 0 -inf -inf -inf -inf -inf -inf];
-maxParams_amp = [inf inf inf inf inf inf inf inf inf inf];
-initParams_amp = [median(x) median(x) median(x) 20 1 1 1 0 0 0];
-nParams_amp = 10;
+% amp_high, amp_med, amp_low, offset
+minParams_amp = [-inf -inf -inf 0 -inf -inf -inf -inf];
+maxParams_amp = [inf inf inf inf inf inf inf inf];
+initParams_amp = [median(x) median(x) median(x) 20 1 1 1 0];
+nParams_amp = 8;
 
 nObs = length(y_high) + length(y_med) + length(y_low);
   
@@ -126,9 +126,9 @@ p = extractParams(fitParams, 'Full');
 
 % calculate the gaussian
 % fit = (1/(p.std*sqrt(2*pi)))*exp(-1/2 * ((x-p.mean)/p.std).^2);
-fit_high = p.amp_high * normpdf(x, p.mean_high, p.std_high) + p.offset_high;
-fit_med = p.amp_med * normpdf(x, p.mean_med, p.std_med) + p.offset_med;
-fit_low = p.amp_low * normpdf(x, p.mean_low, p.std_low) + p.offset_low;
+fit_high = p.amp_high * normpdf(x, p.mean_high, p.std_high) + p.offset;
+fit_med = p.amp_med * normpdf(x, p.mean_med, p.std_med) + p.offset;
+fit_low = p.amp_low * normpdf(x, p.mean_low, p.std_low) + p.offset;
 % normpdf(x,p.mean,p.std)
 
 % update number of iterations
@@ -144,9 +144,9 @@ p = extractParams(fitParams, 'Amplitude');
 
 % calculate the gaussian
 % fit = (1/(p.std*sqrt(2*pi)))*exp(-1/2 * ((x-p.mean)/p.std).^2);
-fit_high = p.amp_high * normpdf(x, p.mean_high, p.std) + p.offset_high;
-fit_med = p.amp_med * normpdf(x, p.mean_med, p.std) + p.offset_med;
-fit_low = p.amp_low * normpdf(x, p.mean_low, p.std) + p.offset_low;
+fit_high = p.amp_high * normpdf(x, p.mean_high, p.std) + p.offset;
+fit_med = p.amp_med * normpdf(x, p.mean_med, p.std) + p.offset;
+fit_low = p.amp_low * normpdf(x, p.mean_low, p.std) + p.offset;
 % normpdf(x,p.mean,p.std)
 
 % update number of iterations
@@ -172,9 +172,8 @@ if strcmp(fitType, 'Full')
     p.amp_high = fitParams(7);
     p.amp_med = fitParams(8);
     p.amp_low = fitParams(9);
-    p.offset_high = fitParams(10);
-    p.offset_med = fitParams(11);
-    p.offset_low = fitParams(12);
+    p.offset = fitParams(10);
+    
 elseif strcmp(fitType, 'Amplitude')
     p.mean_high = fitParams(1);
     p.mean_med = fitParams(2);
@@ -183,9 +182,8 @@ elseif strcmp(fitType, 'Amplitude')
     p.amp_high = fitParams(5);
     p.amp_med = fitParams(6);
     p.amp_low = fitParams(7);
-    p.offset_high = fitParams(8);
-    p.offset_med = fitParams(9);
-    p.offset_low = fitParams(10);
+    p.offset = fitParams(8);
+    
 else
   disp(sprintf('(compareGaussianModels:extractParams) Unknown fitType: %s',fitType));
   keyboard
