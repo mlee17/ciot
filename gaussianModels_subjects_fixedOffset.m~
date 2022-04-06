@@ -30,15 +30,12 @@ for s = 1:nSubj
     [bestfit_full, bestfit_amp, F_subj_fixed(s,1), Fr_subj(s,1), AIC_full_subj(s,1), AIC_amp_subj(s,1)] = ...
         compareGaussianModels_fixedOffset(orientationAll, high_contrastsOcc(s,:), medium_contrastsOcc(s,:), low_contrastsOcc(s,:));
     
-    modelComparisonPlot(orientationAll, high_contrastsOcc(s,:), medium_contrastsOcc(s,:), low_contrastsOcc(s,:), average_contrastsOcc(s,:),...
-        [], [], [], [], bestfit_full, bestfit_amp, F_subj_fixed(s,1), subj_label)
-    
 end
 figure;
 F_sorted = sort(F_subj_fixed);
 plot(F_sorted,ones(length(F_sorted),1)+(rand(length(F_sorted),1)/10), 'o','color',[1 1 1], 'markerFaceColor',[0.2 0.2 0.2],'markerSize',15);
 yaxis(0,2);
-vline(3.305,'--');
+vline(3.34,'--');
 xlabel('F-value');
 set(gca,'ytick',[]);
 title('f1+f2');
@@ -55,7 +52,7 @@ title('f1+f2');
 
 figure; hold on;
 plot(F_subj_fixed, AIC_diff_subj,'o');
-vline(3.305,'--');
+vline(3.34,'--');
 hline(0,'--');
 xlabel('F'); ylabel('AIC diff');
 
@@ -134,34 +131,25 @@ for s = 1:nSubj
     [bestfit_full, bestfit_amp, F_subj_fixed2(s,1), Fr_subj2(s,1), AIC_full_subj2(s,1), AIC_amp_subj2(s,1)] =...
         compareGaussianModels_fixedOffset(orientationAll, high_contrastsOcc2(s,:), medium_contrastsOcc2(s,:), low_contrastsOcc2(s,:));
     
-    modelComparisonPlot(orientationAll, high_contrastsOcc2(s,:), medium_contrastsOcc2(s,:), low_contrastsOcc2(s,:), average_contrastsOcc2(s,:),...
-        [], [], [], [], bestfit_full, bestfit_amp, F_subj_fixed2(s,1), subj_label)
 end
 figure;
 F_sorted = sort(F_subj_fixed2);
 plot(F_sorted,ones(length(F_sorted),1)+(rand(length(F_sorted),1)/10), 'o','color',[1 1 1], 'markerFaceColor',[0.2 0.2 0.2],'markerSize',15);
 yaxis(0,2);
-vline(3.305,'--');
+vline(3.34,'--');
 xlabel('F-value');
 set(gca,'ytick',[]);
 title('f2-f1');
 
-AIC_diff_subj2 = AIC_amp_subj2 - AIC_full_subj2;
+AIC_ratio_subj2 = AIC_amp_subj2 - AIC_full_subj2;
 figure;
-AIC_sorted2 = sort(AIC_diff_subj2);
+AIC_sorted2 = sort(AIC_ratio_subj2);
 plot(AIC_sorted2, ones(length(AIC_sorted2),1)+(rand(length(AIC_sorted2),1)/10), 'o','color',[1 1 1], 'markerFaceColor',[0.2 0.2 0.2],'markerSize',15);
 yaxis(0,2);
 vline(0,'--');
 xlabel('AIC diff (amp-full)');
 set(gca,'ytick',[]);
 title('f2-f1');
-
-figure; hold on;
-plot(F_subj_fixed2, AIC_diff_subj2,'o');
-vline(3.305,'--');
-hline(0,'--');
-xlabel('F'); ylabel('AIC diff');
-
 %%%%%
 highAveOcc2 = mean(high_contrastsOcc2, 1);
 medAveOcc2 = mean(medium_contrastsOcc2, 1);

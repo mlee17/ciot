@@ -1,6 +1,6 @@
 
 %
-function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels_IM(x,y_high,y_med,y_low, y_high2, y_med2, y_low2, varargin)
+function [bestfit_full, bestfit_amp, F_obt, AIC_full, AIC_amp] = compareGaussianModels_IM(x,y_high,y_med,y_low, y_high2, y_med2, y_low2, varargin)
 
 % check arguments
 if nargin < 4
@@ -32,7 +32,7 @@ nObs = length(y_high) + length(y_med) + length(y_low) + length(y_high2) + length
   
 % set optimization parametrs
 maxIter = inf;
-optimParams = optimset('MaxIter',maxIter, 'TolFun',1e-8);
+optimParams = optimset('MaxIter',maxIter, 'TolFun',1e-8,'MaxFunEvals',inf);
 
 % <<< Full Model >>>
 % some globals to keep track of what lsqnonlin does
@@ -118,7 +118,13 @@ bestfit_amp.fitX = min(x):(max(x)-min(x))/(nFitPoints-1):max(x);
 
 %%%%%%%%%
 % Compute F Statistics
-F_obt = ((SSE_amp - SSE_full) / (nParams_full - nParams_amp)) / (SSE_full / (nObs - nParams_full));
+F_obt = ((SSE_amp - SSE_full) / (nParams_full - nParams_amp)) / (SSE_full / (nObs - nParams_full - 1));
+
+% compute AIC
+AIC_full = 2*nParams_full + nObs*log(SSE_full);
+AIC_amp = 2*nParams_amp + nObs*log(SSE_amp);
+bestfit_full.AIC = AIC_full;
+bestfit_amp.AIC = AIC_amp;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

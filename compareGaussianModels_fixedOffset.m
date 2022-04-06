@@ -1,6 +1,6 @@
 
 %
-function [bestfit_full, bestfit_amp, F_obt] = compareGaussianModels_fixedOffset(x,y_high,y_med,y_low,varargin)
+function [bestfit_full, bestfit_amp, F_obt, Fr, AIC_full, AIC_amp] = compareGaussianModels_fixedOffset(x,y_high,y_med,y_low,varargin)
 
 % check arguments
 if nargin < 4
@@ -14,24 +14,24 @@ end
 x = x(:)';y_high = y_high(:)'; y_med = y_med(:)'; y_low = y_low(:)';
 
 % set the initial parameters
-% Full model: mean_high, mean_med, mean_low, std_high, std_med, std_low,
+% Full model:  std_high, std_med, std_low,
 % amp_high, amp_med, amp_low, offset
-minParams_full = [-inf -inf -inf 0 0 0 -inf -inf -inf -inf];
-maxParams_full = [inf inf inf inf inf inf inf inf inf inf];
-initParams_full = [median(x) median(x) median(x) 20 20 20 1 1 1 0]; %median(x) std(x) amplitude offset
-nParams_full = 10; % 4*3 -2
+minParams_full = [ 0 0 0 -inf -inf -inf -inf];
+maxParams_full = [inf inf inf inf inf inf inf];
+initParams_full = [20 20 20 1 1 1 0]; %median(x) std(x) amplitude offset
+nParams_full = 7; % 4*3 -2
 % Reduced (amplitude) model: mean_high, mean_med, mean_low, std, 
 % amp_high, amp_med, amp_low, offset
-minParams_amp = [-inf -inf -inf 0 -inf -inf -inf -inf];
-maxParams_amp = [inf inf inf inf inf inf inf inf];
-initParams_amp = [median(x) median(x) median(x) 20 1 1 1 0];
-nParams_amp = 8;
+minParams_amp = [0 -inf -inf -inf -inf];
+maxParams_amp = [inf inf inf inf inf];
+initParams_amp = [20 1 1 1 0];
+nParams_amp = 5;
 
 nObs = length(y_high) + length(y_med) + length(y_low);
   
 % set optimization parametrs
 maxIter = inf;
-optimParams = optimset('MaxIter',maxIter, 'TolFun',1e-8);
+optimParams = optimset('MaxIter',maxIter, 'TolFun',1e-8, 'MaxFunEvals', inf);
 
 % <<< Full Model >>>
 % some globals to keep track of what lsqnonlin does
@@ -57,7 +57,7 @@ bestfit_full.output = output;
 [bestfit_full.err bestfit_full.fit_high bestfit_full.fit_med bestfit_full.fit_low] = gaussianErr_Full(bestfit_full.params,x,y_high,y_med,y_low);
 
 % compute r2 of fit
-% bestfit_full.r2 = 1-var(bestfit_full.err)/var(y);
+bestfit_full.r2 = 1-var(bestfit_full.err)/(var([y_high; y_med; y_low]));
 
 SSE_full = 0;
 for i = 1:length(bestfit_full.err)
@@ -96,7 +96,7 @@ bestfit_amp.output = output;
 [bestfit_amp.err bestfit_amp.fit_high bestfit_amp.fit_med bestfit_amp.fit_low] = gaussianErr_Amplitude(bestfit_amp.params,x,y_high,y_med,y_low);
 
 % compute r2 of fit
-% bestfit_amp.r2 = 1-var(bestfit_amp.err)/var(y);
+bestfit_amp.r2 = 1-var(bestfit_amp.err)/(var([y_high; y_med; y_low]));
 
 SSE_amp = 0;
 for i = 1:length(bestfit_amp.err)
@@ -113,8 +113,17 @@ bestfit_amp.fitX = min(x):(max(x)-min(x))/(nFitPoints-1):max(x);
 
 %%%%%%%%%
 % Compute F Statistics
-F_obt = ((SSE_amp - SSE_full) / (nParams_full - nParams_amp)) / (SSE_full / (nObs - nParams_full));
+F_obt = ((SSE_amp - SSE_full) / (nParams_full - nParams_amp)) / (SSE_full / (nObs - nParams_full - 1));
+Fr = ((bestfit_full.r2 - bestfit_amp.r2) / (nParams_full - nParams_amp)) / ((1-bestfit_full.r2) / (nObs - nParams_full - 1));
+bestfit_full.Fr = Fr;
+bestfit_amp.Fr = Fr;
 
+% compute AIC
+% AIC ~= 2k + n*ln(RSS) % k = n params, n = n observations
+AIC_full = 2*nParams_full + nObs*log(SSE_full);
+AIC_amp = 2*nParams_amp + nObs*log(SSE_amp);
+bestfit_full.AIC = AIC_full;
+bestfit_amp.AIC = AIC_amp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %    GaussianErr    %
@@ -126,9 +135,9 @@ p = extractParams(fitParams, 'Full');
 
 % calculate the gaussian
 % fit = (1/(p.std*sqrt(2*pi)))*exp(-1/2 * ((x-p.mean)/p.std).^2);
-fit_high = p.amp_high * normpdf(x, p.mean_high, p.std_high) + p.offset;
-fit_med = p.amp_med * normpdf(x, p.mean_med, p.std_med) + p.offset;
-fit_low = p.amp_low * normpdf(x, p.mean_low, p.std_low) + p.offset;
+fit_high = p.amp_high * normpdf(x, 0, p.std_high) + p.offset;
+fit_med = p.amp_med * normpdf(x, 0, p.std_med) + p.offset;
+fit_low = p.amp_low * normpdf(x, 0, p.std_low) + p.offset;
 % normpdf(x,p.mean,p.std)
 
 % update number of iterations
@@ -144,9 +153,9 @@ p = extractParams(fitParams, 'Amplitude');
 
 % calculate the gaussian
 % fit = (1/(p.std*sqrt(2*pi)))*exp(-1/2 * ((x-p.mean)/p.std).^2);
-fit_high = p.amp_high * normpdf(x, p.mean_high, p.std) + p.offset;
-fit_med = p.amp_med * normpdf(x, p.mean_med, p.std) + p.offset;
-fit_low = p.amp_low * normpdf(x, p.mean_low, p.std) + p.offset;
+fit_high = p.amp_high * normpdf(x, 0, p.std) + p.offset;
+fit_med = p.amp_med * normpdf(x, 0, p.std) + p.offset;
+fit_low = p.amp_low * normpdf(x, 0, p.std) + p.offset;
 % normpdf(x,p.mean,p.std)
 
 % update number of iterations
@@ -163,26 +172,22 @@ function p = extractParams(fitParams, fitType)
 % extrat the parameters
   
 if strcmp(fitType, 'Full')
-    p.mean_high = fitParams(1);
-    p.mean_med = fitParams(2);
-    p.mean_low = fitParams(3);
-    p.std_high = fitParams(4);
-    p.std_med = fitParams(5);
-    p.std_low = fitParams(6);
-    p.amp_high = fitParams(7);
-    p.amp_med = fitParams(8);
-    p.amp_low = fitParams(9);
-    p.offset = fitParams(10);
+   
+    p.std_high = fitParams(1);
+    p.std_med = fitParams(2);
+    p.std_low = fitParams(3);
+    p.amp_high = fitParams(4);
+    p.amp_med = fitParams(5);
+    p.amp_low = fitParams(6);
+    p.offset = fitParams(7);
     
 elseif strcmp(fitType, 'Amplitude')
-    p.mean_high = fitParams(1);
-    p.mean_med = fitParams(2);
-    p.mean_low = fitParams(3);
-    p.std = fitParams(4);
-    p.amp_high = fitParams(5);
-    p.amp_med = fitParams(6);
-    p.amp_low = fitParams(7);
-    p.offset = fitParams(8);
+   
+    p.std = fitParams(1);
+    p.amp_high = fitParams(2);
+    p.amp_med = fitParams(3);
+    p.amp_low = fitParams(4);
+    p.offset = fitParams(5);
     
 else
   disp(sprintf('(compareGaussianModels:extractParams) Unknown fitType: %s',fitType));

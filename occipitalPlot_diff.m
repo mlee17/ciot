@@ -1,4 +1,4 @@
-function [mean_high, mean_medium, mean_low, mean_average, mean_single, mean_single_average] = occipitalPlot_diff(file_dir,subj_label)%(cond, conditions_to_visualize, groups_to_visualize, target_freq, file_name)
+function [mean_high, mean_medium, mean_low, mean_average, mean_single, mean_single_average] = occipitalPlot_diff(file_dir,subj_label,task)%(cond, conditions_to_visualize, groups_to_visualize, target_freq, file_name)
 cond = 2;
 conditions_to_visualize = '1-27';
 groups_to_visualize = {'1-7', '10-16', '19-25'};
@@ -241,10 +241,11 @@ for channel_to_visualize = 1 : 128
             
             cos_diff = cos_thisCond - cos_singleMean;
             sin_diff = sin_thisCond - sin_singleMean;
-            
+            if ~task && target_freq==2
             amplitude = sqrt(cos_diff^2 + sin_diff^2);
-            
-%             amplitude = axx_get_frequency(a(:,conditions_to_visualize(jj)), target_freq);
+            else
+            amplitude = axx_get_frequency(a(:,conditions_to_visualize(jj)), target_freq);
+            end
             condition_amplitude(jj) = amplitude;
             conditions(jj) = jj;
             average_amplitude = axx_get_avg_frequency(a(:, conditions_to_visualize(jj)), target_freq);
@@ -363,17 +364,17 @@ noiseColors = brewermap(1,'Greens');
     plot(orientation, mean_low,'Color', colors(3,:))
     plot(orientation, mean_average,'Color', noiseColors)
     
-    plot(110, mean_single(1,1),'o', 'Color', colors(7,:),'MarkerFaceColor',colors(7,:), 'MarkerSize',8);
-    plot(110, mean_single(1,2),'o', 'Color', colors(5,:),'MarkerFaceColor',colors(5,:), 'MarkerSize',8);
-    plot(110, mean_single(1,3),'o', 'Color', colors(3,:),'MarkerFaceColor',colors(3,:), 'MarkerSize',8);
-    plot(130, mean_single(2,1),'o', 'Color', colors(7,:),'MarkerFaceColor',colors(7,:), 'MarkerSize',8);
-    plot(130, mean_single(2,2),'o', 'Color', colors(5,:),'MarkerFaceColor',colors(5,:), 'MarkerSize',8);
-    plot(130, mean_single(2,3),'o', 'Color', colors(3,:),'MarkerFaceColor',colors(3,:), 'MarkerSize',8);
-    
-    plot(110, mean_single_average(1), 'o', 'Color', noiseColors,'MarkerFaceColor',noiseColors, 'MarkerSize', 8);
-    plot(130, mean_single_average(2), 'o', 'Color', noiseColors,'MarkerFaceColor',noiseColors, 'MarkerSize', 8);
-
-    xlim([-100,130]);
+%     plot(110, mean_single(1,1),'o', 'Color', colors(7,:),'MarkerFaceColor',colors(7,:), 'MarkerSize',8);
+%     plot(110, mean_single(1,2),'o', 'Color', colors(5,:),'MarkerFaceColor',colors(5,:), 'MarkerSize',8);
+%     plot(110, mean_single(1,3),'o', 'Color', colors(3,:),'MarkerFaceColor',colors(3,:), 'MarkerSize',8);
+%     plot(130, mean_single(2,1),'o', 'Color', colors(7,:),'MarkerFaceColor',colors(7,:), 'MarkerSize',8);
+%     plot(130, mean_single(2,2),'o', 'Color', colors(5,:),'MarkerFaceColor',colors(5,:), 'MarkerSize',8);
+%     plot(130, mean_single(2,3),'o', 'Color', colors(3,:),'MarkerFaceColor',colors(3,:), 'MarkerSize',8);
+%     
+%     plot(110, mean_single_average(1), 'o', 'Color', noiseColors,'MarkerFaceColor',noiseColors, 'MarkerSize', 8);
+%     plot(130, mean_single_average(2), 'o', 'Color', noiseColors,'MarkerFaceColor',noiseColors, 'MarkerSize', 8);
+% 
+%     xlim([-100,130]);
     ylim([miny maxy]);
 %     title('EEG Power vs Orientation')
     title(subj_label);
