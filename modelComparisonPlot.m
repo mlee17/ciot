@@ -1,4 +1,4 @@
-function modelComparisonPlot(orientationAll, highAve, medAve, lowAve, noiseAve, highErr, medErr, lowErr, noiseErr, bestfit_full, bestfit_amp, F_obt, subjectID)
+function modelComparisonPlot(orientationAll, highAve, medAve, lowAve, noiseAve, highErr, medErr, lowErr, noiseErr, bestfit_full, bestfit_amp, F_obt, subjectID, freqLabel)
 
 colors = brewermap(7, 'BuPu');
 noiseColors = brewermap(1,'Greens');
@@ -14,7 +14,7 @@ myerrorbar(orientationAll, medAve, 'Color', colors(5,:), 'yError', medErr,'Symbo
 myerrorbar(orientationAll, lowAve, 'Color', colors(3,:), 'yError', lowErr ,'Symbol','o','MarkerSize',10);
 set(gca,'FontSize', 13);
 xlabel('Orientation (Deg)');
-ylabel('-F1+F2 EEG Power');
+ylabel([freqLabel,' EEG Power']);
 title(sprintf('%s, Full Model Fobt = %0.4f', subjectID, F_obt));
 subplot(1,2,2); hold on;
 myerrorbar(orientationAll, noiseAve, 'Color', noiseColors, 'yError', noiseErr,'Symbol','o','MarkerSize',10);
@@ -26,5 +26,5 @@ myerrorbar(orientationAll, medAve, 'Color', colors(5,:), 'yError', medErr,'Symbo
 myerrorbar(orientationAll, lowAve, 'Color', colors(3,:), 'yError', lowErr ,'Symbol','o','MarkerSize',10);
 set(gca,'FontSize', 13);
 xlabel('Orientation (Deg)');
-ylabel('-F1+F2 EEG Power');
+ylabel([freqLabel,' EEG Power']);
 title(sprintf('%s, Amplitude Model Fobt = %0.4f', subjectID, F_obt));

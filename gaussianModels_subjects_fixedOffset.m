@@ -31,7 +31,7 @@ for s = 1:nSubj
         compareGaussianModels_fixedOffset(orientationAll, high_contrastsOcc(s,:), medium_contrastsOcc(s,:), low_contrastsOcc(s,:));
     
     modelComparisonPlot(orientationAll, high_contrastsOcc(s,:), medium_contrastsOcc(s,:), low_contrastsOcc(s,:), average_contrastsOcc(s,:),...
-        [], [], [], [], bestfit_full, bestfit_amp, F_subj_fixed(s,1), subj_label)
+        [], [], [], [], bestfit_full, bestfit_amp, F_subj_fixed(s,1), subj_label, 'F1+F2')
     
 end
 figure;
@@ -129,13 +129,13 @@ for s = 1:nSubj
     subj_label = subjectList{s};
     
     [high_contrastsOcc2(s,:), medium_contrastsOcc2(s,:), low_contrastsOcc2(s,:), average_contrastsOcc2(s,:), mean_singleOcc2(:,:,s), mean_single_averageOcc2(:,s)] = ...
-        occipitalPlot_diff(thisDir, subj_label);
+        occipitalPlot_diff(thisDir, subj_label, taskList(s));
     
     [bestfit_full, bestfit_amp, F_subj_fixed2(s,1), Fr_subj2(s,1), AIC_full_subj2(s,1), AIC_amp_subj2(s,1)] =...
         compareGaussianModels_fixedOffset(orientationAll, high_contrastsOcc2(s,:), medium_contrastsOcc2(s,:), low_contrastsOcc2(s,:));
     
     modelComparisonPlot(orientationAll, high_contrastsOcc2(s,:), medium_contrastsOcc2(s,:), low_contrastsOcc2(s,:), average_contrastsOcc2(s,:),...
-        [], [], [], [], bestfit_full, bestfit_amp, F_subj_fixed2(s,1), subj_label)
+        [], [], [], [], bestfit_full, bestfit_amp, F_subj_fixed2(s,1), subj_label,'F2-F1')
 end
 figure;
 F_sorted = sort(F_subj_fixed2);
@@ -229,7 +229,7 @@ for s = 1:nSubj
     subj_label = subjectList{s};
     
     [high_combined(s,:), medium_combined(s,:), low_combined(s,:), average_combined(s,:)] = ...
-        combinedIMSubj(thisDir, subj_label);
+        combinedIMSubj(thisDir, subj_label, taskList(s));
     
     [bestfit_full, bestfit_amp, F_subj_fixed_combined(s,1)] = compareGaussianModels_fixedOffset(orientationAll, high_combined(s,:), medium_combined(s,:), low_combined(s,:));
     

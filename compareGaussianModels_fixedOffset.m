@@ -118,6 +118,12 @@ Fr = ((bestfit_full.r2 - bestfit_amp.r2) / (nParams_full - nParams_amp)) / ((1-b
 bestfit_full.Fr = Fr;
 bestfit_amp.Fr = Fr;
 
+bestfit_amp.F_obt = F_obt;
+df1 = nParams_full - nParams_amp;
+df2 = nObs - nParams_full;
+bestfit_amp.df1 = df1;
+bestfit_amp.df2 = df2;
+
 % compute AIC
 % AIC ~= 2k + n*ln(RSS) % k = n params, n = n observations
 AIC_full = 2*nParams_full + nObs*log(SSE_full);

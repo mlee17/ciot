@@ -120,6 +120,12 @@ bestfit_amp.fitX = min(x):(max(x)-min(x))/(nFitPoints-1):max(x);
 % Compute F Statistics
 F_obt = ((SSE_amp - SSE_full) / (nParams_full - nParams_amp)) / (SSE_full / (nObs - nParams_full - 1));
 
+bestfit_amp.F_obt = F_obt;
+df1 = nParams_full - nParams_amp;
+df2 = nObs - nParams_full;
+bestfit_amp.df1 = df1;
+bestfit_amp.df2 = df2;
+
 % compute AIC
 AIC_full = 2*nParams_full + nObs*log(SSE_full);
 AIC_amp = 2*nParams_amp + nObs*log(SSE_amp);
