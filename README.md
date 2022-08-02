@@ -8,29 +8,18 @@ Three different contrast levels were used, and there were also baseline conditio
 10 trials per each condition, and each trial was 10 sec long.
 
 ## dataset
-27 conditions in total ( (7 orientation offsets + 2 baseline conditions) * 3 contrast levels )
+27 conditions in total ( (7 orientation offsets + 2 baseline conditions) * 3 contrast levels )  
 
+Cond 1-9: High Contrast (30%)  
+Cond 10-18: Med Contrast (15%)  
+Cond 19-27: Low Contrast (7.5%)  
 
-Cond 1-9: High Contrast (30%)
-
-Cond 10-18: Med Contrast (15%)
-
-Cond 19-27: Low Contrast (7.5%)
-
-Cond 1: 0 deg offset (Highest IM response expected)
-
-Cond 2: 7 deg
-
-Cond 3: 15 deg
-
-Cond 4: 30 deg
-
-Cond 5: 45 deg
-
-Cond 6: 75 deg
-
-Cond 7: 90 deg
-
-Cond 8: F1(3Hz) only
-
-Cond 9: F2(5Hz) only
+Cond 1: 0 deg offset (Highest IM response expected)  
+Cond 2: 7 deg  
+Cond 3: 15 deg  
+Cond 4: 30 deg  
+Cond 5: 45 deg  
+Cond 6: 75 deg  
+Cond 7: 90 deg  
+Cond 8: F1(3Hz) only  
+Cond 9: F2(5Hz) only  
