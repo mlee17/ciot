@@ -23,3 +23,15 @@ Cond 6: 75 deg
 Cond 7: 90 deg  
 Cond 8: F1(3Hz) only  
 Cond 9: F2(5Hz) only  
+
+### .mat files
+**1. Axx data (frequency domain)**  
+  - **Axx_c0XX_trials.mat** contains trial data for Condition **XX**.  
+  -- ***Amp*** contains fourier decomposed amplitudes for a frequency range from 0Hz to 50Hz (0.5Hz step).  
+  -- ***Cos*** and ***Sin*** contains the real and imaginary components from the fourier analysis, respectively.  
+  -- The dimension of the data for *Amp, Cos, Sin* is 105 X 128 X 10 (Frequencies X Channels X Trials).  
+  - **Axx_c0XX.mat** contains weighted averaged data across trials for Condition **XX**.  
+  -- The dimension of the data for *Amp, Cos, Sin* is 105 X 128 (Frequencies X Channels).  
+
+**2. Raw data (time domain)**  
+  - **Raw_c0XX_t0YY.mat** contains data for trial number YY from Condition XX.  
