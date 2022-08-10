@@ -40,11 +40,11 @@ for freq = 1:length(target_frequencies)
     end
 end
 
-output_cos = mean(output_cos,2);
-output_sin = mean(output_sin,2);
-output_amp = mean(output_amp,2);
-output_side_cos = mean(output_side_cos,2);
-output_side_sin = mean(output_side_sin,2);
+output_cos = squeeze(mean(output_cos,2));
+output_sin = squeeze(mean(output_sin,2));
+output_amp = squeeze(mean(output_amp,2));
+output_side_cos = squeeze(mean(output_side_cos,2));
+output_side_sin = squeeze(mean(output_side_sin,2));
 
 return
 % needs work
