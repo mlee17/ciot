@@ -1,0 +1,38 @@
+function [output_cos, output_sin, output_amp, output_side_cos, output_side_sin] = getPhases(file_directory, target_frequencies, task)
+% outputs are nFrequencies x nConditions matrices
+nConditions = 27;
+target_channel = 75;
+
+disp(file_directory);
+axxOutput = loadAxx(2,file_directory);
+fourier_resolution = axxOutput.dFHz;
+
+for freq = 1:length(target_frequencies)
+    freq_index = (target_frequencies(freq) / fourier_resolution) + 1;
+    for iCond = 1:nConditions
+        
+        output_cos(freq,iCond) = axxOutput.cos(freq_index, target_channel, iCond);
+        output_sin(freq,iCond) = axxOutput.sin(freq_index, target_channel, iCond);
+        output_amp(freq,iCond) = axxOutput.freq_ampl(freq_index, target_channel, iCond);
+        
+        output_side_cos(freq,iCond) = (axxOutput.cos(freq_index-1, target_channel, iCond) + axxOutput.cos(freq_index+1, target_channel, iCond)) / 2;
+        output_side_sin(freq,iCond) = (axxOutput.sin(freq_index-1, target_channel, iCond) + axxOutput.sin(freq_index+1, target_channel, iCond)) / 2;
+        
+    
+    end
+    
+    if target_frequencies(freq) == 2 && task
+        singleConds = [8,9, 17,18, 26,27];
+        for i = 1:length(singleConds)
+            single_cos(i) = output_cos(freq, singleConds(i));
+            single_sin(i) = output_sin(freq, singleConds(i));
+        end
+        meanSingle_cos = mean(single_cos);
+        meanSingle_sin = mean(single_sin);
+        output_cos(freq, :) = output_cos(freq,:) - meanSingle_cos;
+        output_sin(freq, :) = output_sin(freq,:) - meanSingle_sin;
+    end
+end
+
+% needs work
+output_phase = [];
