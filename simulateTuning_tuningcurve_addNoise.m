@@ -80,8 +80,8 @@ deltaT = 0.001;
 t = 0:deltaT:1;%time
 f1 = 3;
 f2 = 5;
-f1wave = sin(2*pi*f1*t);
-f2wave = sin(2*pi*f2*t);
+f1wave = sin(2*pi*f1*t) * 0.2;
+f2wave = sin(2*pi*f2*t) * 0.2;
 
 figure; hold on;
 plot(t, f1wave);
@@ -98,11 +98,25 @@ sigma = 0.2; % semi-saturation paramter
 p = 2;% power for numerator
 q = 2; % power for denominator
 
+nSub = 100;
+std_subLow0 = 2;
+for iSub = 1:nSub
 for c = 1:length(contrasts)
+%     if c == 3
+%         for iTimepoint = 1:length(f1wave)
+%             thisF1wave = f1wave + std_subLow0*randn(1,length(f1wave));
+%             thisF2wave = f2wave + std_subLow0*randn(1,length(f1wave));
+%         end
+%     else
+%         thisF1wave = f1wave;
+%         thisF2wave = f2wave;
+%     end
+      thisF1wave = f1wave + std_subLow0*randn(1,length(f1wave));
+      thisF2wave = f2wave + std_subLow0*randn(1,length(f1wave));
 for s = 1:length(orientations) % for each orientation offset
     
-numerator{c}{s} = (amplitudeTest(c)*f1wave + amplitudeMask{c}(s)*f2wave).^p;%abs(amplitudeTest(c)*f1wave + amplitudeMask{c}(s)*f2wave).^p;
-normalizationPool{c}{s} = zeros(1,length(t));
+numerator{iSub}{c}{s} = (amplitudeTest(c)*thisF1wave + amplitudeMask{c}(s)*thisF2wave).^p;%abs(amplitudeTest(c)*f1wave + amplitudeMask{c}(s)*f2wave).^p;
+normalizationPool{iSub}{c}{s} = zeros(1,length(t));
 for i = 1:length(tuning) % for each receptiveField (normalization pool)
 %     mult_test = receptiveField{i} .* stim{1} *contrasts(c); % fixed to stim 1 (test)
     thisAmp_test = normpdf(0, tuning(i), tuningWidth) * contrasts(c);%sum(mult_test(:)) / maxResponse;
@@ -110,75 +124,82 @@ for i = 1:length(tuning) % for each receptiveField (normalization pool)
     thisAmp_mask = normpdf(orientations(i), tuning(i), tuningWidth) * contrasts(c);%sum(mult_mask(:)) / maxResponse;
     
 %     if orientations(s) > 30 + 90
-        thisNorm = (thisAmp_test*f1wave).^q + (thisAmp_mask*f2wave).^q;%abs(thisAmp_test*f1wave).^q + abs(thisAmp_mask*f2wave).^q;
+        thisNorm = (thisAmp_test*thisF1wave).^q + (thisAmp_mask*thisF2wave).^q;%abs(thisAmp_test*f1wave).^q + abs(thisAmp_mask*f2wave).^q;
 %     else
 %         thisNorm = abs(thisAmp_test*f1wave + thisAmp_mask*f2wave).^q;
 %     end
     
-    normalizationPool{c}{s} = normalizationPool{c}{s} + thisNorm;
+    normalizationPool{iSub}{c}{s} = normalizationPool{iSub}{c}{s} + thisNorm;
 end
-Response{c}{s} = numerator{c}{s} ./ (normalizationPool{c}{s} + sigma^q);
+Response{iSub}{c}{s} = numerator{iSub}{c}{s} ./ (normalizationPool{iSub}{c}{s} + sigma^q);
 % figure;
-fftMag{c}{s} = 2*deltaT*abs(fft(Response{c}{s}));
+fftMag{iSub}{c}{s} = 2*deltaT*abs(fft(Response{iSub}{c}{s}));
 % stem(1:50, fftMag(2:51));
 
-secondDiff{c}(s) = fftMag{c}{s}(3);
-secondSum{c}(s) = fftMag{c}{s}(9);
+secondDiff{iSub}{c}(s) = fftMag{iSub}{c}{s}(3);
+secondSum{iSub}{c}(s) = fftMag{iSub}{c}{s}(9);
 
-fftMag_numerator{c}{s} = 2*deltaT*abs(fft(numerator{c}{s}));
-secondDiff2{c}(s) = fftMag_numerator{c}{s}(3);
-secondSum2{c}(s) = fftMag_numerator{c}{s}(9);
+fftMag_numerator{iSub}{c}{s} = 2*deltaT*abs(fft(numerator{iSub}{c}{s}));
+secondDiff2{iSub}{c}(s) = fftMag_numerator{iSub}{c}{s}(3);
+secondSum2{iSub}{c}(s) = fftMag_numerator{iSub}{c}{s}(9);
 
 end
 end
+end
 %%
-figure;
-stem(1:40, fftMag{1}{1}(2:41), 'Color', [0.5 0.5 0.5],'LineWidth',1.5);
-hold on;
-stem([6,10], [fftMag{1}{1}(7) fftMag{1}{1}(11)],'filled', 'Color', [0.2 0.3 0.8],'LineWidth',3);
-stem([2,8], [fftMag{1}{1}(3) fftMag{1}{1}(9)], 'filled','Color', [0.75 0.3 0.55],'LineWidth',3);
-stem([4,16], [fftMag{1}{1}(5) fftMag{1}{1}(17)], 'filled','Color',[0.9 0.7 0.8],'LineWidth',3);
-box off;
-xlabel('Frequency (Hz)');
-ylabel('Amplitude');
-set(gca,'ytick', []);
+% figure;
+% stem(1:40, fftMag{1}{1}(2:41), 'Color', [0.5 0.5 0.5],'LineWidth',1.5);
+% hold on;
+% stem([6,10], [fftMag{1}{1}(7) fftMag{1}{1}(11)],'filled', 'Color', [0.2 0.3 0.8],'LineWidth',3);
+% stem([2,8], [fftMag{1}{1}(3) fftMag{1}{1}(9)], 'filled','Color', [0.75 0.3 0.55],'LineWidth',3);
+% stem([4,16], [fftMag{1}{1}(5) fftMag{1}{1}(17)], 'filled','Color',[0.9 0.7 0.8],'LineWidth',3);
+% box off;
+% xlabel('Frequency (Hz)');
+% ylabel('Amplitude');
+% set(gca,'ytick', []);
 
 %%
+for iSub = 1:nSub
 for c = 1:length(contrasts)
-temp = flip(secondDiff{c});
-secondDiffAll{c} = [temp, secondDiff{c}(2:end)];
-temp = flip(secondSum{c});
-secondSumAll{c} = [temp, secondSum{c}(2:end)];
+temp = flip(secondDiff{iSub}{c});
+secondDiffAll{iSub}{c} = [temp, secondDiff{iSub}{c}(2:end)];
+temp = flip(secondSum{iSub}{c});
+secondSumAll{iSub}{c} = [temp, secondSum{iSub}{c}(2:end)];
+end
 end
 temp = flip(-(orientations));
 orientationAll = [temp, orientations(2:end)];
 
 colors = brewermap(7, 'BuPu');
 
-figure;hold on;
-plot(orientationAll, secondSumAll{1},'-o', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondSumAll{2},'-o', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondSumAll{3},'-o', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
-myerrorbar(orientationAll, secondSumAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondSumAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondSumAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
+figure;
+for iSub = 1:20%nSub
+    subplot(5,4,iSub);
+hold on;
+plot(orientationAll, secondSumAll{iSub}{1},'-', 'Color',colors(7,:), 'LineWidth',2); %[0.75 0.3 0.55]
+plot(orientationAll, secondSumAll{iSub}{2},'-', 'Color',colors(5,:), 'LineWidth',2); %[0.75 0.3 0.55]
+plot(orientationAll, secondSumAll{iSub}{3},'-', 'Color',colors(3,:), 'LineWidth',2); %[0.75 0.3 0.55]
+myerrorbar(orientationAll, secondSumAll{iSub}{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 5);
+myerrorbar(orientationAll, secondSumAll{iSub}{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 5);
+myerrorbar(orientationAll, secondSumAll{iSub}{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 5);
 
 xlabel('Orienation Offset (Deg)');
 ylabel('f1+f2 Amplitude');
 legend('off');
 drawPublishAxis;
+end
 
-figure;hold on;
-plot(orientationAll, secondDiffAll{1},'-o', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondDiffAll{2},'-o', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondDiffAll{3},'-o', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
-myerrorbar(orientationAll, secondDiffAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondDiffAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondDiffAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
-xlabel('Orienation Offset (Deg)');
-ylabel('f2-f1 Amplitude');
-legend('off');
-drawPublishAxis;
+% figure;hold on;
+% plot(orientationAll, secondDiffAll{1},'-o', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
+% plot(orientationAll, secondDiffAll{2},'-o', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
+% plot(orientationAll, secondDiffAll{3},'-o', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
+% myerrorbar(orientationAll, secondDiffAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
+% myerrorbar(orientationAll, secondDiffAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
+% myerrorbar(orientationAll, secondDiffAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
+% xlabel('Orienation Offset (Deg)');
+% ylabel('f2-f1 Amplitude');
+% legend('off');
+% drawPublishAxis;
 
 
 %%

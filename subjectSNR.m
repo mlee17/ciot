@@ -66,6 +66,8 @@ lowSNRSum = allSNR_SumFreq_mean(19:25);
 
 sumSNR = [highSNRSum; medSNRSum; lowSNRSum];
 
+SNR_high0 = allSNR_SumFreq_selected(:,1);
+
 %%
 % correlation between raw IM and RCA IM
 figure;

@@ -1,4 +1,4 @@
-function [signalAll, noiseLowerAll, noiseUpperAll] = getSingletrials(file_dir,subj_label,task)%(cond, conditions_to_visualize, groups_to_visualize, target_freq, file_name)
+function [signalAll, noiseLowerAll, noiseUpperAll, noiseMeanAll] = getSingletrials(file_dir,subj_label,task)%(cond, conditions_to_visualize, groups_to_visualize, target_freq, file_name)
 cond = 1;
 conditions_to_visualize = '1-27';
 groups_to_visualize = {'1-7', '10-16', '19-25'};
@@ -178,6 +178,7 @@ for iContrast = 1:3 %high med low
                 squeeze(ampl(frequency_index-1, occipital_electrodes(iChannel),:,conditions_to_analyze(iContrast,iOrientation)))];
             noiseUpperAll{iContrast,iOrientation} = [noiseUpperAll{iContrast,iOrientation};...
                 squeeze(ampl(frequency_index+1, occipital_electrodes(iChannel),:,conditions_to_analyze(iContrast,iOrientation)))];
+            noiseMeanAll{iContrast,iOrientation} = (noiseLowerAll{iContrast,iOrientation} + noiseUpperAll{iContrast,iOrientation})/2;
             
         end
     end
