@@ -12,6 +12,7 @@ mglOpen;
 grating = mglMakeGrating(rf.size,rf.size, rf.sf, rf.tuning(1), 0);
 gaussian = mglMakeGaussian(rf.size,rf.size, rf.sd, rf.sd);
 defaultRF = grating.*gaussian;
+keyboard
 for i = 1:length(rf.tuning)
     tempRF = mglMakeGrating(rf.size, rf.size, rf.sf, rf.tuning(i), 0);
     receptiveField{i} = tempRF.*gaussian;

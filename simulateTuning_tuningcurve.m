@@ -10,7 +10,7 @@ rf.sf = 1;
 % orientations = [0 pi*7/180 pi*15/180 pi*30/180 pi*45/180 pi*75/180 pi*90/180];
 orientations = [0 7 15 30 45 75 90];
 
-contrasts = [0.3 0.15 0.075];
+contrasts = [0.3 0.20 0.10];
 
 % tuning = [-pi/2 -pi*60/180 -pi*30/180 0 pi*30/180 pi*60/180];%[-90 -60 -30 0 30 60];
 % sigma = pi*30/180;
@@ -133,7 +133,7 @@ end
 end
 %%
 figure;
-stem(1:40, fftMag{1}{1}(2:41), 'Color', [0.5 0.5 0.5],'LineWidth',1.5);
+stem(1:30, fftMag{1}{1}(2:31), 'Color', [0.5 0.5 0.5],'LineWidth',1.5);
 hold on;
 stem([6,10], [fftMag{1}{1}(7) fftMag{1}{1}(11)],'filled', 'Color', [0.2 0.3 0.8],'LineWidth',3);
 stem([2,8], [fftMag{1}{1}(3) fftMag{1}{1}(9)], 'filled','Color', [0.75 0.3 0.55],'LineWidth',3);
@@ -156,32 +156,35 @@ orientationAll = [temp, orientations(2:end)];
 colors = brewermap(7, 'BuPu');
 
 figure;hold on;
-plot(orientationAll, secondSumAll{1},'-o', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondSumAll{2},'-o', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondSumAll{3},'-o', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
-myerrorbar(orientationAll, secondSumAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondSumAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondSumAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
+plot(orientationAll, secondSumAll{1},'-', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
+plot(orientationAll, secondSumAll{2},'-', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
+plot(orientationAll, secondSumAll{3},'-', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
+% myerrorbar(orientationAll, secondSumAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
+% myerrorbar(orientationAll, secondSumAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
+% myerrorbar(orientationAll, secondSumAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
 
 xlabel('Orienation Offset (Deg)');
 ylabel('f1+f2 Amplitude');
 legend('off');
-drawPublishAxis;
+set(gca,'ytick',[]);
+drawPublishAxis('labelFontSize',12);
 
 figure;hold on;
-plot(orientationAll, secondDiffAll{1},'-o', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondDiffAll{2},'-o', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
-plot(orientationAll, secondDiffAll{3},'-o', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
-myerrorbar(orientationAll, secondDiffAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondDiffAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
-myerrorbar(orientationAll, secondDiffAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
+plot(orientationAll, secondDiffAll{1},'-', 'Color',colors(7,:), 'LineWidth',3); %[0.75 0.3 0.55]
+plot(orientationAll, secondDiffAll{2},'-', 'Color',colors(5,:), 'LineWidth',3); %[0.75 0.3 0.55]
+plot(orientationAll, secondDiffAll{3},'-', 'Color',colors(3,:), 'LineWidth',3); %[0.75 0.3 0.55]
+% myerrorbar(orientationAll, secondDiffAll{1}, 'Color', colors(7,:), 'Symbol','o', 'MarkerSize', 10);
+% myerrorbar(orientationAll, secondDiffAll{2}, 'Color', colors(5,:), 'Symbol','o', 'MarkerSize', 10);
+% myerrorbar(orientationAll, secondDiffAll{3}, 'Color', colors(3,:), 'Symbol','o', 'MarkerSize', 10);
 xlabel('Orienation Offset (Deg)');
 ylabel('f2-f1 Amplitude');
 legend('off');
-drawPublishAxis;
+set(gca,'ytick',[]);
+drawPublishAxis('labelFontSize',12);
 
 
 %%
+return
 % f1 + f2 low contrast std = 0.09
 % f2 - f1 low contrast std = 0.17
 std1 = 0.09;
