@@ -1,0 +1,48 @@
+function [output_cos, output_sin, output_amp, x_est, y_est, V_indiv, std_indiv, output_side_cos, output_side_sin] = getPhases_trial(file_directory, target_frequencies, task)
+% outputs are nFrequencies x nConditions matrices
+nConditions = 27;
+target_channel = 75;
+
+disp(file_directory);
+axxOutput = loadAxx(1,file_directory);
+fourier_resolution = axxOutput.dFHz;
+
+%size of axxOutput.xxx
+%All 105 Frequencies x 128 Channels x nTrials x 27 Conditions
+
+for freq = 1:length(target_frequencies)
+    freq_index = (target_frequencies(freq) / fourier_resolution) + 1;
+%     for iCond = 1:nConditions
+        
+        output_cos(freq,:,:) = axxOutput.cos(freq_index, target_channel, :, :); % nFreq x nTrials x 27 conditions
+        output_sin(freq,:,:) = axxOutput.sin(freq_index, target_channel, :, :);
+        output_amp(freq,:,:) = axxOutput.freq_ampl(freq_index, target_channel, :, :);
+    
+        output_side_cos(freq,:,:) = (axxOutput.cos(freq_index-1, target_channel, :,:) + axxOutput.cos(freq_index+1, target_channel, :,:)) / 2;
+        output_side_sin(freq,:,:) = (axxOutput.sin(freq_index-1, target_channel, :,:) + axxOutput.sin(freq_index+1, target_channel, :,:)) / 2;
+        
+%     end
+end
+
+% for the first condition only
+for freq = 1:length(target_frequencies)
+    x_est(freq) = mean(output_cos(freq,:,1)); % mean of cos across trial
+    y_est(freq) = mean(output_sin(freq,:,1)); % mean of sin across trial
+    nTrials(freq) = size(output_cos,2);
+end
+V_indiv = zeros(1, length(target_frequencies));
+for freq = 1:length(target_frequencies)
+    for iTrial = 1:nTrials(freq)
+        V_indiv(freq) = V_indiv(freq) + (output_cos(freq,iTrial,1) - x_est(freq))^2 + (output_sin(freq,iTrial,1) - y_est(freq))^2;
+    end
+    V_indiv(freq) = V_indiv(freq) / (2*(nTrials(freq)-1));
+end
+std_indiv = sqrt(V_indiv);
+
+% needs work
+output_phase = [];
+
+
+% V_indiv = 1/(2*(M-1)) * summation[(xj-x_est)^2 + (yj-y_est)^2]
+% where x is a real component (cos) and y is an imaginary component (sin),
+% M is the number of trials and j is the index for individual trials
